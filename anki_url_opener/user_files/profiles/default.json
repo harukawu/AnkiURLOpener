@@ -1,0 +1,7 @@
+{
+    "image_path": "",
+    "field_name": "Front",
+    "url_template": "https://www.google.com/search?q={{field_content}}",
+    "application": "",
+    "enabled": true
+} 

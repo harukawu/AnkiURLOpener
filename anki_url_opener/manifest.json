@@ -1,0 +1,11 @@
+{
+    "name": "AnkiURLOpener",
+    "package": "anki_voice_addon",
+    "ankiweb_id": "",
+    "author": "AnkiURLOpener Developer",
+    "version": "0.2.0",
+    "homepage": "",
+    "conflicts": [],
+    "min_point_version": 45,
+    "max_point_version": -1
+} 
