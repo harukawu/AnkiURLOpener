@@ -103,6 +103,35 @@ def on_answer_shown(card):
         
         log_info(f"Card answer shown for card ID: {card.id}")
         
+        # Delay execution to let Anki finish internal state updates
+        # This prevents race conditions when returning from edit mode
+        QTimer.singleShot(100, lambda: process_card_delayed(card))
+        
+    except Exception as e:
+        log_error(f"Error in on_answer_shown hook", e)
+        # Don't show error to user to avoid interrupting review
+
+
+def process_card_delayed(card):
+    """Process the card after a short delay to avoid race conditions"""
+    from .config_manager import get_profile_data, get_profile_for_deck
+    from .url_handler import process_url_for_card
+    from .logger import log_info, log_error, log_debug
+    
+    try:
+        # Re-validate card and reviewer state after delay
+        if not card:
+            log_debug("Card object is None after delay, skipping")
+            return
+        
+        if not mw.reviewer or not mw.reviewer.card:
+            log_debug("Reviewer not in valid state after delay, skipping")
+            return
+        
+        if mw.reviewer.card.id != card.id:
+            log_debug("Card ID mismatch with reviewer after delay, skipping")
+            return
+        
         # Get the deck name for this card
         deck_id = card.current_deck_id()
         deck = mw.col.decks.get(deck_id)
@@ -142,8 +171,9 @@ def on_answer_shown(card):
                 log_error("Failed to process URL")
         else:
             log_debug("No URL template provided, skipping URL processing")
+            
     except Exception as e:
-        log_error(f"Error in on_answer_shown hook", e)
+        log_error(f"Error in process_card_delayed", e)
         # Don't show error to user to avoid interrupting review
 
 # Global references
