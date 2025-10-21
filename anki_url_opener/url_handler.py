@@ -90,10 +90,24 @@ def process_url_for_card(card, field_name: str, url_template: str, application: 
         bool: True if successful, False otherwise
     """
     try:
+        # Validate card object
+        if not card:
+            log_error("Card object is None")
+            return False
+        
         log_info(f"Processing URL for card {card.id}, field: '{field_name}'")
         
         # Get the note from the card
-        note = card.note()
+        try:
+            note = card.note()
+        except Exception as e:
+            log_error(f"Failed to get note from card {card.id}", e)
+            return False
+        
+        # Validate note object
+        if not note:
+            log_error(f"Note object is None for card {card.id}")
+            return False
         
         # Extract field content
         field_content = ""
@@ -115,8 +129,7 @@ def process_url_for_card(card, field_name: str, url_template: str, application: 
         
         # Skip if empty field
         if not field_content:
-            log_error(f"Field '{field_name}' is empty in card {card.id}")
-            tooltip(f"Field '{field_name}' is empty")
+            log_debug(f"Field '{field_name}' is empty in card {card.id}, skipping")
             return False
         
         # Replace placeholders in URL template
@@ -126,6 +139,6 @@ def process_url_for_card(card, field_name: str, url_template: str, application: 
         return open_url(url, application)
     
     except Exception as e:
-        log_error(f"Error processing URL for card {card.id}", e)
-        showInfo(f"Error processing URL for card: {str(e)}")
+        log_error(f"Error processing URL for card", e)
+        # Don't show popup to avoid interrupting review
         return False 

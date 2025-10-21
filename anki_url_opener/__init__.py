@@ -81,6 +81,21 @@ def on_answer_shown(card):
     
     # Wrap in try-except to prevent errors from propagating to Anki
     try:
+        # Validate card object
+        if not card:
+            log_debug("Card object is None, skipping")
+            return
+        
+        # Check if reviewer is in a valid state
+        if not mw.reviewer or not mw.reviewer.card:
+            log_debug("Reviewer not in valid state, skipping")
+            return
+        
+        # Check if card matches current reviewer card
+        if mw.reviewer.card.id != card.id:
+            log_debug("Card ID mismatch with reviewer, skipping")
+            return
+        
         # Check if add-on is globally enabled
         if not is_addon_enabled():
             log_debug("Add-on is globally disabled, skipping")
