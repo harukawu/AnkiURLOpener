@@ -8,7 +8,7 @@ import subprocess
 import re
 from typing import Dict, Any, Optional
 
-from aqt.utils import showInfo, tooltip
+from aqt.utils import showInfo
 
 from .logger import log_info, log_error, log_debug
 
@@ -73,7 +73,6 @@ def open_url(url: str, application: str = None) -> bool:
     
     except Exception as e:
         log_error(f"Error opening URL '{url}'", e)
-        showInfo(f"Error opening URL: {str(e)}")
         return False
 
 
@@ -124,7 +123,6 @@ def process_url_for_card(card, field_name: str, url_template: str, application: 
             log_debug(f"Extracted field content: '{field_content}'")
         else:
             log_error(f"Field '{field_name}' not found in card {card.id}")
-            tooltip(f"Field '{field_name}' not found in card")
             return False
         
         # Skip if empty field
